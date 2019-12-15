@@ -1,0 +1,34 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'MainGUI'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+version = '1.0'
+
+run
+{
+  standardInput=System.in
+}
+
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+        	'Implementation-Version': version,
+        	'Main-Class': mainClassName
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' 
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.google.api-client:google-api-client:1.30.5'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.30.4'
+    compile 'com.google.apis:google-api-services-drive:v3-rev20191108-1.30.3'
+}
