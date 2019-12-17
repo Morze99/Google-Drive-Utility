@@ -1,5 +1,5 @@
 import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
-import com.google.api.client.auth.oauth2.Credential;
+/*import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -13,9 +13,9 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.FileList;*/
 import com.google.api.client.googleapis.media.MediaHttpDownloader;
-import java.io.FileNotFoundException;
+/*import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -33,10 +33,10 @@ import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
-import javax.swing.JCheckBox;
+import javax.swing.JCheckBox;*/
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
-import java.awt.Color;
+/*import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -49,7 +49,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import javax.swing.JFileChooser;
+import javax.swing.JFileChooser;*/
 
 class CustomProgressListener implements MediaHttpDownloaderProgressListener
 {
@@ -75,11 +75,11 @@ class CustomProgressListener implements MediaHttpDownloaderProgressListener
         break;
       case MEDIA_COMPLETE:
     	  progressBar.setValue(100);
-    	  try {
+    	  /*try {
               Thread.sleep(2000);
           } catch (InterruptedException e) {
               e.printStackTrace();
-          }
+          }*/
         break;
 	default:
 		System.out.println("Progress not available");

@@ -1,7 +1,7 @@
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
+//import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -13,25 +13,25 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.DriveList;
+//import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
-import com.google.api.client.googleapis.media.MediaHttpDownloader;
+//import com.google.api.services.drive.model.FileList;
+//import com.google.api.client.googleapis.media.MediaHttpDownloader;
 import java.io.FileNotFoundException;
-import java.io.BufferedReader;
-import java.io.BufferedOutputStream;
+//import java.io.BufferedReader;
+//import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
+//import java.io.OutputStream;
+//import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.security.GeneralSecurityException;
+//import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.awt.EventQueue;
+//import java.util.List;
+//import java.util.ArrayList;
+//import java.util.Scanner;
+//import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JTextField;
@@ -46,18 +46,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Font;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+//import javax.swing.event.ChangeListener;
+//import javax.swing.event.ChangeEvent;
+//import java.beans.PropertyChangeListener;
+//import java.beans.PropertyChangeEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
+//import javax.swing.JFrame;
 import java.awt.SystemColor;
 import javax.swing.JPanel;
-import javax.swing.JList;
-import javax.swing.border.BevelBorder;
+//import javax.swing.JList;
+//import javax.swing.border.BevelBorder;
 import java.awt.Label;
 
 public class MainGUI 
@@ -206,41 +206,49 @@ public class MainGUI
 		panel.add(chckbxNewCheckBox);
 		
 		textField = new JTextField();
-		textField.addKeyListener(new KeyAdapter() {
+		textField.addKeyListener(new KeyAdapter() 
+		{
 			@Override
-			public void keyPressed(KeyEvent e) 
+			public void keyReleased(KeyEvent e) 
 			{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER)
 				{
-					try 
+					new Thread (new Runnable()
 					{
-						if(chckbxNewCheckBox.isSelected() | (list_1.getSelectedIndex()==-1 && !chckbxNewCheckBox.isSelected()))
+						public void run()
 						{
-							Methods.searchAllDrives(drivesArray,
-													service, 
-													textField, 
-													list, 
-													idList);
+							try 
+							{
+								if(chckbxNewCheckBox.isSelected() | (list_1.getSelectedIndex()==-1 && !chckbxNewCheckBox.isSelected()))
+								{
+									Methods.searchAllDrives(drivesArray,
+															service, 
+															textField, 
+															list, 
+															idList);
+								}
+								else
+								{
+									Methods.search(idList, 
+												   list, 
+												   service, 
+												   driveID, 
+												   list_1, 
+												   drivesArray, 
+												   pageToken, 
+												   query, 
+												   textField);
+								}
+							} catch (Exception e1) 
+							{
+								e1.printStackTrace();
+							}
 						}
-						else
-						{
-							Methods.search(idList, 
-									   list, 
-									   service, 
-									   driveID, 
-									   list_1, 
-									   drivesArray, 
-									   pageToken, 
-									   query, 
-									   textField);
-						}
-					} catch (Exception e1) 
-					{
-						e1.printStackTrace();
-					}
-				}
+					}).start();			
+				}	
 			}
 		});
+		
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		textField.setBounds(99, 15, 213, 26);
 		panel.add(textField);
@@ -251,34 +259,42 @@ public class MainGUI
 		{
 			public void actionPerformed(ActionEvent e) 
 			{
-				try 
+				new Thread(new Runnable() 
 				{
-					if(chckbxNewCheckBox.isSelected() | (list_1.getSelectedIndex()==-1 && !chckbxNewCheckBox.isSelected()))
-					{
-						Methods.searchAllDrives(drivesArray,
-												service, 
-												textField, 
-												list, 
-												idList);
-					}
-					else
-					{
-						Methods.search(idList, 
-								   list, 
-								   service, 
-								   driveID, 
-								   list_1, 
-								   drivesArray, 
-								   pageToken, 
-								   query, 
-								   textField);
-					}
-				} catch (Exception e1) 
-				{
-					e1.printStackTrace();
-				}
+		            @Override
+		            public void run() 
+		            {
+		            	try 
+		            	{
+		            		if(chckbxNewCheckBox.isSelected() | (list_1.getSelectedIndex()==-1 && !chckbxNewCheckBox.isSelected()))
+		            		{
+		            			Methods.searchAllDrives(drivesArray,
+		            									service, 
+		            									textField, 
+		            									list, 
+		            									idList);
+		            		}
+		            		else
+		            		{
+		            			Methods.search(idList, 
+		            						   list, 
+		            						   service, 
+		            						   driveID, 
+		            						   list_1, 
+		            						   drivesArray, 
+		            						   pageToken, 
+		            						   query, 
+		            						   textField);
+		            		}
+		            	} catch (Exception e1) 
+		            	{
+		            		e1.printStackTrace();
+		            	}
+		            }
+		        }).start();
 			}
 		});
+		
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnNewButton.setBounds(327, 12, 115, 29);
 		panel.add(btnNewButton);
@@ -310,12 +326,18 @@ public class MainGUI
 		panel_1.setLayout(null);
 		
 		JFileChooser fileChooser_1 = new JFileChooser();
+		fileChooser_1.setBorder(null);
+		fileChooser_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		fileChooser_1.setMultiSelectionEnabled(true);
 		fileChooser_1.setBounds(15, 16, 431, 496);
 		panel_1.add(fileChooser_1);
 		
 		java.awt.List list_2 = new java.awt.List();
+		list_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		list_2.setBounds(452, 58, 422, 376);
 		panel_1.add(list_2);
+		
+		Methods.listDrives(list_2, service, drivesArray);
 		
 		Label label = new Label("Drives lists:");
 		label.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -327,7 +349,7 @@ public class MainGUI
 			public void actionPerformed(ActionEvent e) 
 			{
 				try {
-					Methods.upload(service, list_2, fileChooser_1);
+					Methods.upload(service, list_2, fileChooser_1, drivesArray);
 				} catch (Exception e1) 
 				{
 					e1.printStackTrace();
@@ -335,7 +357,7 @@ public class MainGUI
 			}
 		});
 		btnNewButton_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnNewButton_2.setBounds(461, 440, 413, 60);
+		btnNewButton_2.setBounds(452, 440, 422, 60);
 		panel_1.add(btnNewButton_2);
 	}
 }
