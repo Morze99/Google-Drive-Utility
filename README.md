@@ -6,7 +6,7 @@ A tool to download files from and and upload files to google drive
 
 Download and install Gradle from official website https://gradle.org/
 
-# Known Bug
+# Known Bugs
 
 Some tests had show that sometimes a download stops and MacOS X user said that any download stops at the first chunk
 
