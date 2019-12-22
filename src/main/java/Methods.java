@@ -43,7 +43,7 @@ public class Methods
 	    	drivesArray.add(drive);//, file.getId());
 	    }
 		String keyword=searchBox.getText().toString();
-		String query="name contains '".concat(keyword).concat("'");
+		String query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		String pageToken = null;
 		do
 	      {
