@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import javax.swing.JFrame;
-import java.awt.Toolkit;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JCheckBox;
@@ -119,9 +118,8 @@ public class MainGUI
 		frmGoogleDriveUtility = new JFrame();
 		frmGoogleDriveUtility.setResizable(false);
 		frmGoogleDriveUtility.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		frmGoogleDriveUtility.setIconImage(Toolkit.getDefaultToolkit().getImage(MainGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/upFolder.gif")));
 		frmGoogleDriveUtility.setTitle("Google Drive Utility");
-		frmGoogleDriveUtility.setBounds(100, 100, 917, 618);
+		frmGoogleDriveUtility.setBounds(100, 100, 900, 597);
 		frmGoogleDriveUtility.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmGoogleDriveUtility.getContentPane().setLayout(null);
 		
