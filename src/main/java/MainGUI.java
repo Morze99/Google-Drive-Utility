@@ -1,7 +1,6 @@
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
-//import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -13,25 +12,13 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
-//import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
-//import com.google.api.services.drive.model.FileList;
-//import com.google.api.client.googleapis.media.MediaHttpDownloader;
 import java.io.FileNotFoundException;
-//import java.io.BufferedReader;
-//import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-//import java.io.OutputStream;
-//import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-//import java.security.GeneralSecurityException;
 import java.util.Collections;
-//import java.util.List;
-//import java.util.ArrayList;
-//import java.util.Scanner;
-//import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.awt.Toolkit;
 import javax.swing.JTextField;
@@ -46,18 +33,11 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Font;
 import javax.swing.JTabbedPane;
-//import javax.swing.event.ChangeListener;
-//import javax.swing.event.ChangeEvent;
-//import java.beans.PropertyChangeListener;
-//import java.beans.PropertyChangeEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JFileChooser;
-//import javax.swing.JFrame;
 import java.awt.SystemColor;
 import javax.swing.JPanel;
-//import javax.swing.JList;
-//import javax.swing.border.BevelBorder;
 import java.awt.Label;
 
 public class MainGUI 
@@ -132,12 +112,12 @@ public class MainGUI
 	    Drive service = new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
 	            .setApplicationName(APPLICATION_NAME)
 	            .build();
-		ArrayList<File> idList = new ArrayList();
-		List<Integer> downloadQueue = new ArrayList();
-		ArrayList<com.google.api.services.drive.model.Drive> drivesArray= new ArrayList();
+		ArrayList<File> idList = new ArrayList<File>();
+		ArrayList<com.google.api.services.drive.model.Drive> drivesArray= new ArrayList<com.google.api.services.drive.model.Drive>();
 		String driveID=null, pageToken=null, query=null;
 		
 		frmGoogleDriveUtility = new JFrame();
+		frmGoogleDriveUtility.setResizable(false);
 		frmGoogleDriveUtility.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		frmGoogleDriveUtility.setIconImage(Toolkit.getDefaultToolkit().getImage(MainGUI.class.getResource("/javax/swing/plaf/metal/icons/ocean/upFolder.gif")));
 		frmGoogleDriveUtility.setTitle("Google Drive Utility");

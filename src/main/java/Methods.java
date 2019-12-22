@@ -1,65 +1,19 @@
-/*import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;*/
-import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.http.FileContent;
-/*import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.GenericData;
-import com.google.api.client.util.store.FileDataStoreFactory;*/
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.Drive.Drives;
 import com.google.api.services.drive.model.DriveList;
-//import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-//import com.google.api.client.googleapis.media.MediaHttpDownloader;
 import java.io.FileNotFoundException;
-//import java.io.BufferedReader;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-//import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.SocketTimeoutException;
-import java.nio.file.Path;
 import java.io.FileOutputStream;
-//import java.io.InputStreamReader;
-//import java.security.GeneralSecurityException;
-//import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-//import java.util.Scanner;
-//import java.awt.EventQueue;
-//import javax.swing.JFrame;
-//import java.awt.Toolkit;
 import javax.swing.JTextField;
-//import javax.swing.JLabel;
-//import javax.swing.JList;
-//import javax.swing.JCheckBox;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
-/*import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.Font;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeListener;
-import javax.swing.text.JTextComponent;
-import javax.swing.event.ChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;*/
 import javax.swing.JFileChooser;
 
 public class Methods
@@ -135,7 +89,7 @@ public class Methods
 	    	drivesArray.add(drive);
 	    }
 		String keyword=searchBox.getText().toString();
-		query="name contains '".concat(keyword).concat("'");
+		query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		System.out.println(query);
 		driveID=drivesArray.get(list_1.getSelectedIndex()).getId();
 		System.out.println(drivesArray.get(list_1.getSelectedIndex()).getName());
@@ -200,12 +154,12 @@ public class Methods
 			          System.out.println("Chosen file: "+idList.get(downloadIndexes[i]).getName());//+" size : "+size);
 			          long size1=(idList.get(downloadIndexes[i]).getSize());
 			          //Integer size =(Integer)((idList.get(downloadIndexes[i]).getSize())/1240000/100);
-			          int size=(int)(size1/100);
+			          /*int size=(int)(size1/100);
 			          System.out.println(size);
 			          if(size<15735000)
 			          {
 			        	  size=15735000;
-			          }
+			          }*/
 			          buffer = new BufferedOutputStream(destinatioFile, 10490000);
 			          Drive.Files.Get file = null;
 					try {
@@ -214,18 +168,14 @@ public class Methods
 						e.printStackTrace();
 					}
 						progressBar.setValue(0);
-				        file.getMediaHttpDownloader().setProgressListener(new CustomProgressListener(progressBar)).setChunkSize(10490000);
+				        file.getMediaHttpDownloader().setDirectDownloadEnabled(false).setProgressListener(new CustomProgressListener(progressBar)).setChunkSize(10490000);
 						try 
 						{
 							file.executeMediaAndDownloadTo(buffer);
 						}
 						catch (SocketTimeoutException e)
 						{
-							try {
-								resumeDownload(file, buffer, fileName, path, destinatioFile);
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
+							e.printStackTrace();
 						} 
 						catch (IOException e) 
 						{
@@ -238,12 +188,28 @@ public class Methods
 						e.printStackTrace();
 					}
 			          System.out.println(idList.get(downloadIndexes[i]).getName()+" downloaded");
-			          try {
-							buffer.close();
-							System.out.println("OH HO CHIUSO TUTTO");
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+			          try 
+			          {
+						buffer.close();
+						System.out.println("OH HO CHIUSO TUTTO");
+			          } catch (IOException e) 
+			          {
+						e.printStackTrace();
+					  }
+			          java.io.File fileDownloaded= new java.io.File(path.concat(fileName));
+			          System.out.println("File size: "+fileDownloaded.length());
+			          System.out.println("File size drive: "+size1);
+			          long downloadedFile=fileDownloaded.length();
+			          long driveSize=size1;
+			          if(downloadedFile<driveSize)
+			          {
+			        	  System.out.println("File eliminato");
+			        	  fileDownloaded.delete();
+			          }
+			          else
+			          {
+			        	  System.out.println("OK");
+			          }
 				}
 				
 				System.out.println("Enabling download button");
@@ -262,12 +228,12 @@ public class Methods
 			@Override
 			public void run()
 			{
-				List<java.io.File> files= new ArrayList();
+				List<java.io.File> files= new ArrayList<java.io.File>();
 				files = Arrays.asList(fileChooser_1.getSelectedFiles());
 				for(int i=0; i<files.size(); i++)
 				{
 					File fileMetadata = new File();
-					ArrayList<String> idList=new ArrayList();
+					ArrayList<String> idList=new ArrayList<String>();
 					idList.add(drivesArray.get(list_2.getSelectedIndex()).getId());
 					fileMetadata.setName(files.get(i).getName());
 					fileMetadata.setParents(idList);
@@ -290,32 +256,4 @@ public class Methods
 			}
 		}).start();
 	}
-	
-	public static void resumeDownload(Drive.Files.Get file, 
-									  BufferedOutputStream buffer,
-									  String fileName, 
-									  String path,
-									  FileOutputStream destinatioFile) throws IOException
-	{
-			System.out.println("repeat");
-			java.io.File partFile= new java.io.File(path.concat(fileName));
-			partFile.length();
-			file.getMediaHttpDownloader().setBytesDownloaded(partFile.length());
-			try {
-				file.executeMediaAndDownloadTo(buffer);
-			}catch(SocketTimeoutException e1)
-			{
-				buffer.close();
-				buffer = new BufferedOutputStream(destinatioFile, 10480000);
-				resumeDownload(file, buffer, fileName, path, destinatioFile);
-			}catch(IllegalArgumentException e)
-			{
-				e.printStackTrace();
-			}
-			catch (IOException e1) 
-			{
-				e1.printStackTrace();
-			}
-	}
-	
 }
