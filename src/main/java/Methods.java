@@ -1,5 +1,6 @@
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.Drive.Files.Create;
 import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
@@ -15,6 +16,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 public class Methods
 {
@@ -35,13 +38,7 @@ public class Methods
 									   java.awt.List list, 
 									   ArrayList<File> idList) throws IOException
 	{
-		list.removeAll();
-		idList.clear();
-		DriveList listDrives=service.drives().list().execute();
-	    for (com.google.api.services.drive.model.Drive drive : listDrives.getDrives())
-	    {
-	    	drivesArray.add(drive);//, file.getId());
-	    }
+		clearList(list, idList);
 		String keyword=searchBox.getText().toString();
 		String query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		String pageToken = null;
@@ -49,26 +46,70 @@ public class Methods
 	      {
 	        FileList result = null;
 			try {
-				result = service.files().list()
-				.setQ(query)
-				.setSupportsAllDrives(true)
-				.setIncludeItemsFromAllDrives(true)
-				.setSpaces("drive")
-				.setCorpora("allDrives")
-				.setFields("nextPageToken, files(id, name, size)")
-				.setPageToken(pageToken)
-				.execute();
+				result = service
+						.files()
+						.list()
+						.setQ(query)
+						.setSupportsAllDrives(true)
+						.setIncludeItemsFromAllDrives(true)
+						.setSpaces("drive")
+						.setCorpora("allDrives")
+						.setFields("nextPageToken, files(id, name, size, mimeType)")
+						.setPageToken(pageToken)
+						.execute();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	        //result;
 	        for (File file : result.getFiles())
 	        {
+	        	//File name=new File();
+	        	//name.setName(file.getName().substring(8));
+	        	//service.files().update(file.getId(), name).execute();
 	        	list.add(file.getName());
 				idList.add(file);
 	        }
 	        pageToken = result.getNextPageToken();
 	      } while (pageToken != null);
+		idList.trimToSize();
+		System.out.println(idList.size());
+	}
+	
+	public static void searchMyDrives(ArrayList<com.google.api.services.drive.model.Drive> drivesArray, 
+									  Drive service, 
+									  JTextField searchBox, 
+									  java.awt.List list, 
+									  ArrayList<File> idList) throws IOException
+	{
+		clearList(list, idList);
+		String keyword=searchBox.getText().toString();
+		String query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
+		String pageToken = null;
+		do
+		{
+			FileList result = null;
+			try {
+				result = service
+						.files()
+						.list()
+						.setQ(query)
+						.setSpaces("drive")
+						.setFields("nextPageToken, files(id, name, size, mimeType)")
+						.setPageToken(pageToken)
+						.execute();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			for (File file : result.getFiles())
+			{
+				//File name=new File();
+	        	//name.setName(file.getName().substring(9));
+	        	//service.files().update(file.getId(), name).execute();
+				list.add(file.getName());
+				idList.add(file);
+			}
+			pageToken = result.getNextPageToken();
+		} while (pageToken != null);
+		idList.trimToSize();
 	}
 
 	public static void search(ArrayList<File> idList, 
@@ -81,13 +122,7 @@ public class Methods
 							  String query,
 							  JTextField searchBox) throws Exception
 	{
-		list.removeAll();
-		idList.clear();
-		DriveList listDrives=service.drives().list().execute();
-	    for (com.google.api.services.drive.model.Drive drive : listDrives.getDrives())
-	    {
-	    	drivesArray.add(drive);
-	    }
+		clearList(list, idList);
 		String keyword=searchBox.getText().toString();
 		query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		System.out.println(query);
@@ -97,137 +132,207 @@ public class Methods
 	      {
 	        FileList result = null;
 			try {
-				result = service.files().list()
-				.setQ(query)
-				.setSupportsAllDrives(true)
-				.setDriveId(driveID)
-				.setIncludeItemsFromAllDrives(true)
-				.setSpaces("drive")
-				.setCorpora("drive")
-				.setFields("nextPageToken, files(id, name, size)")
-				.setPageToken(pageToken)
-				.execute();
+				result = service
+						.files()
+						.list()
+						.setQ(query)
+						.setSupportsAllDrives(true)
+						.setDriveId(driveID)
+						.setIncludeItemsFromAllDrives(true)
+						.setSpaces("drive")
+						.setCorpora("drive")
+						.setFields("nextPageToken, files(id, name, size, mimeType)")
+						.setPageToken(pageToken)
+						.execute();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 	        for (File file : result.getFiles())
 	        {
+	        	//File name=new File();
+	        	//name.setName(file.getName().substring(9));
+	        	//service.files().update(file.getId(), name).setSupportsAllDrives(true).execute();
 	        	list.add(file.getName());
 	            idList.add(file);
 	        }
 	        pageToken = result.getNextPageToken();
 	      } while (pageToken != null);
+		idList.trimToSize();
 	}
 	
-	public static void download(JButton btnNewButton_1, 
+	public static void download(JButton btnNewButton_3,
+								JButton btnNewButton_1,
+								JButton btnNewButton,
 								JFileChooser fileChooser, 
 								java.awt.List list, 
 								ArrayList<File> idList, 
 								Drive service, 
-								JProgressBar progressBar)
+								JProgressBar progressBar,
+								JFrame frmGoogleDriveUtility,
+								JLabel lblNewLabel_3,
+								JTextField textField)
 	{
-		new Thread(new Runnable() {
-            @Override
-            public void run() 
-            {	
-            	btnNewButton_1.setEnabled(false);
-            	System.out.println(btnNewButton_1.isEnabled());
-            	FileOutputStream destinatioFile=null;
-				BufferedOutputStream buffer= null;
-				fileChooser.showSaveDialog(null);
-				CustomProgressListener.cancelSelection(btnNewButton_1);
-				String path=fileChooser.getSelectedFile().getAbsolutePath().concat("/");
-				int[] downloadIndexes=list.getSelectedIndexes();
-				for(int i=0; i< downloadIndexes.length; i++)
+		textField.setEnabled(false);
+		lblNewLabel_3.setVisible(false);
+		clearList(list, idList);
+		System.out.println(btnNewButton_1.isEnabled());
+		FileOutputStream destinatioFile=null;
+		BufferedOutputStream buffer= null;
+		int result = fileChooser.showSaveDialog(frmGoogleDriveUtility);
+		if(result == JFileChooser.CANCEL_OPTION)
+		{
+			btnNewButton.setEnabled(true);
+			btnNewButton_1.setEnabled(true);
+			btnNewButton_3.setEnabled(true);
+			textField.setEnabled(true);
+			return;
+		}
+		String path=fileChooser.getSelectedFile().getAbsolutePath().concat("/");
+		for(int i=0; i< idList.size(); i++)
+		{
+			String fileId = idList.get(i).getId();
+			String mimeType = idList.get(i).getMimeType();
+			System.out.println(mimeType);
+			String fileName=idList.get(i).getName();
+			String convertToType="";
+			boolean export;
+
+			if(mimeType.contentEquals("application/vnd.google-apps.document"))
+			{
+				System.out.println("docx");
+				convertToType=convertToType.concat("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+				fileName=fileName.concat(".docx");
+				export=true;
+			}
+			else if(mimeType.contentEquals("application/vnd.google-apps.spreadsheet"))
+			{
+				System.out.println("xlsx");
+				convertToType=convertToType.concat("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				fileName=fileName.concat(".xlsx");
+				export=true;
+			}
+			else if(mimeType.contentEquals("application/vnd.google-apps.presentation"))
+			{
+				System.out.println("pptx");
+				convertToType=convertToType.concat("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+				fileName=fileName.concat(".pptx");
+				export=true;
+			}
+			else
+			{
+				export=false;
+			}
+
+			try 
+			{
+				destinatioFile = new FileOutputStream(path.concat(fileName), true);
+			}
+			catch (FileNotFoundException e) 
+			{
+				e.printStackTrace();
+			}
+			System.out.println("Chosen file: "+idList.get(i).getName()+"\n"+export);
+			long size1=0;
+			if(!export)
+			{
+				size1=(idList.get(i).getSize());
+			}
+			buffer = new BufferedOutputStream(destinatioFile, 10490000);
+			Drive.Files.Get file = null;
+			try 
+			{
+				file = service.files().get(fileId);
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+			if(export)
+			{
+				System.out.println("MIMEType detected");
+				System.out.println(convertToType+"\n"+fileName);
+				try 
 				{
-					
-						String fileId = idList.get(downloadIndexes[i]).getId();
-			          //File file = service.files().get(fileId).setFields("size").execute();
-			          //long size=file.getSize();
-						String fileName=idList.get(downloadIndexes[i]).getName();
-			          try {
-						destinatioFile = new FileOutputStream(path.concat(fileName), true);
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
-			          //clearScreen();
-			          System.out.println("Chosen file: "+idList.get(downloadIndexes[i]).getName());//+" size : "+size);
-			          long size1=(idList.get(downloadIndexes[i]).getSize());
-			          //Integer size =(Integer)((idList.get(downloadIndexes[i]).getSize())/1240000/100);
-			          /*int size=(int)(size1/100);
-			          System.out.println(size);
-			          if(size<15735000)
-			          {
-			        	  size=15735000;
-			          }*/
-			          buffer = new BufferedOutputStream(destinatioFile, 10490000);
-			          Drive.Files.Get file = null;
-					try {
-						file = service.files().get(fileId);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-						progressBar.setValue(0);
-				        file.getMediaHttpDownloader().setDirectDownloadEnabled(false).setProgressListener(new CustomProgressListener(progressBar)).setChunkSize(10490000);
-						try 
-						{
-							file.executeMediaAndDownloadTo(buffer);
-						}
-						catch (SocketTimeoutException e)
-						{
-							e.printStackTrace();
-						} 
-						catch (IOException e) 
-						{
-							e.printStackTrace();
-						}
-						
-			          try {
-						buffer.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-			          System.out.println(idList.get(downloadIndexes[i]).getName()+" downloaded");
-			          try 
-			          {
-						buffer.close();
-						System.out.println("OH HO CHIUSO TUTTO");
-			          } catch (IOException e) 
-			          {
-						e.printStackTrace();
-					  }
-			          java.io.File fileDownloaded= new java.io.File(path.concat(fileName));
-			          System.out.println("File size: "+fileDownloaded.length());
-			          System.out.println("File size drive: "+size1);
-			          long downloadedFile=fileDownloaded.length();
-			          long driveSize=size1;
-			          if(downloadedFile<driveSize)
-			          {
-			        	  System.out.println("File eliminato");
-			        	  fileDownloaded.delete();
-			          }
-			          else
-			          {
-			        	  System.out.println("OK");
-			          }
+					service.files().export(fileId, convertToType)
+					.executeMediaAndDownloadTo(buffer);
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
 				}
-				
-				System.out.println("Enabling download button");
+			}
+			else
+			{
 				progressBar.setValue(0);
-				btnNewButton_1.setEnabled(true);
-            }
-        }).start();
+				progressBar.setIndeterminate(true);
+				file.getMediaHttpDownloader()
+				.setDirectDownloadEnabled(false)
+				.setProgressListener(new CustomProgressListener(progressBar))
+				.setChunkSize(10490000);
+				try 
+				{
+					file.executeMediaAndDownloadTo(buffer);
+				}
+				catch (SocketTimeoutException e)
+				{
+					e.printStackTrace();
+				} 
+				catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+			try {
+				buffer.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println(idList.get(i).getName()+" downloaded");
+			try 
+			{
+				buffer.close();
+				System.out.println("OH HO CHIUSO TUTTO");
+			} catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+			java.io.File fileDownloaded= new java.io.File(path.concat(fileName));
+			System.out.println("File size: "+fileDownloaded.length());
+			System.out.println("File size drive: "+size1);
+			long downloadedFile=fileDownloaded.length();
+			long driveSize=size1;
+			if(downloadedFile<driveSize)
+			{
+				System.out.println("File eliminato");
+				fileDownloaded.delete();
+			}
+			else
+			{
+				System.out.println("OK");
+			}
+		}
+		System.out.println("Enabling download button");
+		progressBar.setIndeterminate(false);
+		progressBar.setValue(0);
+		btnNewButton.setEnabled(true);
+		btnNewButton_1.setEnabled(true);
+		btnNewButton_3.setEnabled(true);
+		lblNewLabel_3.setVisible(true);
+		textField.setEnabled(true);
 	}
 	
-	public static void upload(Drive service, 
-							  java.awt.List list_2, 
-							  JFileChooser fileChooser_1, 
-							  ArrayList<com.google.api.services.drive.model.Drive> drivesArray) throws Exception
+	public static void uploadShared(Drive service, 
+							  		java.awt.List list_2, 
+							  		JFileChooser fileChooser_1, 
+							  		ArrayList<com.google.api.services.drive.model.Drive> drivesArray,
+							  		JLabel lblNewLabel_1,
+							  		JProgressBar progressBar_1) throws Exception
 	{
 		new Thread(new Runnable() {
 			@Override
 			public void run()
 			{
+				lblNewLabel_1.setVisible(false);
 				List<java.io.File> files= new ArrayList<java.io.File>();
 				files = Arrays.asList(fileChooser_1.getSelectedFiles());
 				for(int i=0; i<files.size(); i++)
@@ -239,21 +344,123 @@ public class Methods
 					fileMetadata.setParents(idList);
 					java.io.File filePath = new java.io.File(files.get(i).getAbsolutePath());
 					FileContent mediaContent = new FileContent(null, filePath);
+					Create create=null;
 					File file=null;
 					try 
 					{
-						file = service.files()
-									  .create(fileMetadata, mediaContent)
-									  .setFields("id")
-								      .setSupportsAllDrives(true)
-								      .execute();
+						create = service.files()
+										.create(fileMetadata, mediaContent);
+
+						progressBar_1.setValue(0);
+						progressBar_1.setIndeterminate(true);
+						
+						create.setFields("id")
+							  .setSupportsAllDrives(true)
+							  .getMediaHttpUploader()
+							  .setProgressListener(new CustomProgressListener(progressBar_1))
+							  .setChunkSize(5242880);
+						
+						file = create.execute();
+						
 					} catch (IOException e)
 					{
 						e.printStackTrace();
 					}
 					System.out.println("File ID: " + file.getId());
 				}
+				lblNewLabel_1.setVisible(true);
 			}
 		}).start();
+	}
+
+	public static void upload(Drive service, 
+							  java.awt.List list_2, 
+							  JFileChooser fileChooser_1, 
+							  ArrayList<com.google.api.services.drive.model.Drive> drivesArray,
+							  JLabel lblNewLabel_1,
+							  JProgressBar progressBar_1) throws Exception
+	{
+		new Thread(new Runnable() {
+			@Override
+			public void run()
+			{
+				lblNewLabel_1.setVisible(false);
+				List<java.io.File> files= new ArrayList<java.io.File>();
+				files = Arrays.asList(fileChooser_1.getSelectedFiles());
+				for(int i=0; i<files.size(); i++)
+				{
+					File fileMetadata = new File();
+					fileMetadata.setName(files.get(i).getName());
+					java.io.File filePath = new java.io.File(files.get(i).getAbsolutePath());
+					FileContent mediaContent = new FileContent(null, filePath);
+					Create create=null;
+					File file=null;
+					try 
+					{
+						create = service.files()
+								 .create(fileMetadata, mediaContent);
+						
+						progressBar_1.setValue(0);
+						progressBar_1.setIndeterminate(true);
+						
+						create.getMediaHttpUploader()
+							  .setProgressListener(new CustomProgressListener(progressBar_1))
+							  .setChunkSize(5242880);
+						file = create.execute();		
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+					System.out.println("File ID: " + file.getId());
+				}
+				lblNewLabel_1.setVisible(true);
+			}
+		}).start();
+	}
+	
+	public static void clearList(java.awt.List list,
+								 ArrayList<File> idList) 
+	{
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				ArrayList<File> supportList=new ArrayList<File>();
+				int i=0;
+				int[] indexes = list.getSelectedIndexes();
+				if(indexes.length==0)
+				{
+					list.removeAll();
+					idList.clear();
+					return;
+				}
+				else
+				{
+					long start=System.currentTimeMillis();
+					list.removeAll();
+					for(i=0;i<indexes.length;i++)
+					{
+						supportList.add(idList.get(indexes[i]));
+						list.add(idList.get(indexes[i]).getName());
+						list.select(i);
+					}
+					idList.clear();
+					for(i=0; i<supportList.size();i++)
+					{
+						idList.add(supportList.get(i));
+					}
+					long stop=System.currentTimeMillis();
+					long elaspsedTime=stop-start;
+					System.out.println("Time: "+(float)elaspsedTime/1000);
+				}
+				idList.trimToSize();
+			}
+		}).start();
+	}
+
+	public static void rename() 
+	{
+			
 	}
 }
