@@ -5,6 +5,7 @@ import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import java.io.FileNotFoundException;
+import java.awt.Color;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -21,7 +22,6 @@ import javax.swing.JLabel;
 
 public class Methods
 {
-	
 	public static void listDrives(java.awt.List list, Drive service, ArrayList<com.google.api.services.drive.model.Drive> drivesArray) throws IOException
 	{
 		DriveList listDrives=service.drives().list().execute();
@@ -36,12 +36,15 @@ public class Methods
 									   Drive service, 
 									   JTextField searchBox, 
 									   java.awt.List list, 
-									   ArrayList<File> idList) throws IOException
+									   ArrayList<File> idList, JButton btnNewButton_1) throws IOException
 	{
+		btnNewButton_1.setText("Download");
+		btnNewButton_1.setForeground(new Color(3355443));
 		clearList(list, idList);
 		String keyword=searchBox.getText().toString();
 		String query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		String pageToken = null;
+		long totalSize=0;
 		do
 	      {
 	        FileList result = null;
@@ -66,24 +69,36 @@ public class Methods
 	        	//name.setName(file.getName().substring(8));
 	        	//service.files().update(file.getId(), name).execute();
 	        	list.add(file.getName());
+	        	if(file.getSize()!=null)
+				{
+					totalSize=totalSize+file.getSize();
+				}
 				idList.add(file);
 	        }
 	        pageToken = result.getNextPageToken();
 	      } while (pageToken != null);
 		idList.trimToSize();
+		if(idList.size()==0)
+		{
+			noFileFound(list);
+		}
 		System.out.println(idList.size());
+		System.out.println("Total size (in GiB)"+(((totalSize/1024)/1024)/1024));
 	}
 	
 	public static void searchMyDrives(ArrayList<com.google.api.services.drive.model.Drive> drivesArray, 
 									  Drive service, 
 									  JTextField searchBox, 
 									  java.awt.List list, 
-									  ArrayList<File> idList) throws IOException
+									  ArrayList<File> idList, JButton btnNewButton_1) throws IOException
 	{
+		btnNewButton_1.setText("Download");
+		btnNewButton_1.setForeground(new Color(3355443));
 		clearList(list, idList);
 		String keyword=searchBox.getText().toString();
 		String query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		String pageToken = null;
+		long totalSize=0;
 		do
 		{
 			FileList result = null;
@@ -105,11 +120,21 @@ public class Methods
 	        	//name.setName(file.getName().substring(9));
 	        	//service.files().update(file.getId(), name).execute();
 				list.add(file.getName());
+				if(file.getSize()!=null)
+				{
+					totalSize=totalSize+file.getSize();
+				}
 				idList.add(file);
 			}
 			pageToken = result.getNextPageToken();
 		} while (pageToken != null);
 		idList.trimToSize();
+		if(idList.size()==0)
+		{
+			noFileFound(list);
+		}
+		System.out.println(idList.size());
+		System.out.println("Total size (in GiB)"+(((totalSize/1024)/1024)/1024));
 	}
 
 	public static void search(ArrayList<File> idList, 
@@ -120,14 +145,17 @@ public class Methods
 							  ArrayList<com.google.api.services.drive.model.Drive> drivesArray, 
 							  String pageToken,
 							  String query,
-							  JTextField searchBox) throws Exception
+							  JTextField searchBox, JButton btnNewButton_1) throws Exception
 	{
+		btnNewButton_1.setText("Download");
+		btnNewButton_1.setForeground(new Color(3355443));
 		clearList(list, idList);
 		String keyword=searchBox.getText().toString();
 		query="mimeType != 'application/vnd.google-apps.folder' and name contains '".concat(keyword).concat("'");
 		System.out.println(query);
 		driveID=drivesArray.get(list_1.getSelectedIndex()).getId();
 		System.out.println(drivesArray.get(list_1.getSelectedIndex()).getName());
+		long totalSize=0;
 		do
 	      {
 	        FileList result = null;
@@ -153,11 +181,21 @@ public class Methods
 	        	//name.setName(file.getName().substring(9));
 	        	//service.files().update(file.getId(), name).setSupportsAllDrives(true).execute();
 	        	list.add(file.getName());
+	        	if(file.getSize()!=null)
+				{
+					totalSize=totalSize+file.getSize();
+				}
 	            idList.add(file);
 	        }
 	        pageToken = result.getNextPageToken();
 	      } while (pageToken != null);
 		idList.trimToSize();
+		if(idList.size()==0)
+		{
+			noFileFound(list);
+		}
+		System.out.println(idList.size());
+		System.out.println("Total size (in GiB)"+(((totalSize/1024)/1024)/1024));
 	}
 	
 	public static void download(JButton btnNewButton_3,
@@ -169,11 +207,11 @@ public class Methods
 								Drive service, 
 								JProgressBar progressBar,
 								JFrame frmGoogleDriveUtility,
-								JLabel lblNewLabel_3,
-								JTextField textField)
+								JTextField textField, JButton btnNewButton_4)
 	{
 		textField.setEnabled(false);
-		lblNewLabel_3.setVisible(false);
+		btnNewButton_1.setText("Download");
+		btnNewButton_1.setForeground(new Color(3355443));//3355443
 		clearList(list, idList);
 		System.out.println(btnNewButton_1.isEnabled());
 		FileOutputStream destinatioFile=null;
@@ -184,6 +222,7 @@ public class Methods
 			btnNewButton.setEnabled(true);
 			btnNewButton_1.setEnabled(true);
 			btnNewButton_3.setEnabled(true);
+			btnNewButton_4.setEnabled(true);
 			textField.setEnabled(true);
 			return;
 		}
@@ -316,8 +355,10 @@ public class Methods
 		progressBar.setValue(0);
 		btnNewButton.setEnabled(true);
 		btnNewButton_1.setEnabled(true);
+		btnNewButton_1.setText("Completed");
+		btnNewButton_1.setForeground(new Color(65280));//3355443
 		btnNewButton_3.setEnabled(true);
-		lblNewLabel_3.setVisible(true);
+		btnNewButton_4.setEnabled(true);
 		textField.setEnabled(true);
 	}
 	
@@ -429,10 +470,14 @@ public class Methods
 				ArrayList<File> supportList=new ArrayList<File>();
 				int i=0;
 				int[] indexes = list.getSelectedIndexes();
-				if(indexes.length==0)
+				if(indexes.length==0||(indexes.length==1&&idList.size()==0))
 				{
+					long start=System.currentTimeMillis();
 					list.removeAll();
 					idList.clear();
+					long stop=System.currentTimeMillis();
+					long elaspsedTime=stop-start;
+					System.out.println("Time: "+(float)elaspsedTime/1000);
 					return;
 				}
 				else
@@ -459,6 +504,11 @@ public class Methods
 		}).start();
 	}
 
+	public static void noFileFound(java.awt.List list)
+	{
+		list.add("No Results Found");
+	}
+	
 	public static void rename() 
 	{
 			

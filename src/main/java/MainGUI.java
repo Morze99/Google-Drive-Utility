@@ -1,7 +1,6 @@
 import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -46,7 +45,7 @@ public class MainGUI
 	private JFrame frmGoogleDriveUtility;
 	private JTextField textField;
 	
-	private static final String APPLICATION_NAME = "Comunismo Ludico Downloader";
+	private static final String APPLICATION_NAME = "Google Drive Utility";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
@@ -142,14 +141,33 @@ public class MainGUI
 		tabbedPane.addTab("Download", null, panel, null);
 		panel.setLayout(null);
 		
-		JLabel lblNewLabel_3 = new JLabel("All downloads completed");
-		lblNewLabel_3.setForeground(new Color(0, 204, 0));
-		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblNewLabel_3.setBounds(566, 474, 231, 25);
-		panel.add(lblNewLabel_3);
-		lblNewLabel_3.setVisible(false);
+		JButton btnNewButton_4 = new JButton("Select All");
+		
+		JButton btnNewButton_1 = new JButton("Download");
 		
 		java.awt.List list = new java.awt.List();
+		list.addItemListener(new ItemListener() 
+		{
+			public void itemStateChanged(ItemEvent e) 
+			{
+				System.out.println("State changed"+"\n"+list.getSelectedIndexes().length+"="+list.getItemCount());
+				if(list.getSelectedIndexes().length>0&&list.getSelectedIndexes().length<list.getItemCount())
+				{
+					btnNewButton_4.setText("Deselect");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 20));
+				}
+				else if(list.getSelectedIndexes().length==list.getItemCount())
+				{
+					btnNewButton_4.setText("Deselect All");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 18));
+				}
+				else
+				{
+					btnNewButton_4.setText("Select All");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 20));
+				}
+			}
+		});
 		list.setMultipleMode(true);
 		list.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		list.setBounds(15, 47, 427, 413);
@@ -219,7 +237,8 @@ public class MainGUI
 											   drivesArray, 
 											   pageToken, 
 											   query, 
-											   textField);
+											   textField,
+											   btnNewButton_1);
 								}
 								else if(list_1.isIndexSelected(0))
 								{
@@ -228,7 +247,8 @@ public class MainGUI
 														   service, 
 														   textField, 
 														   list, 
-														   idList);
+														   idList,
+														   btnNewButton_1);
 								}
 								else
 								{
@@ -237,7 +257,8 @@ public class MainGUI
 											service, 
 											textField, 
 											list, 
-											idList);
+											idList,
+											btnNewButton_1);
 								}
 							} catch (Exception e1) 
 							{
@@ -277,7 +298,7 @@ public class MainGUI
 										   drivesArray, 
 										   pageToken, 
 										   query, 
-										   textField);
+										   textField, btnNewButton_1);
 							}
 							else if(list_1.isIndexSelected(0))
 							{
@@ -286,7 +307,7 @@ public class MainGUI
 													   service, 
 													   textField, 
 													   list, 
-													   idList);
+													   idList, btnNewButton_1);
 							}
 							else
 							{
@@ -295,7 +316,7 @@ public class MainGUI
 										service, 
 										textField, 
 										list, 
-										idList);
+										idList, btnNewButton_1);
 							}
 		            	} catch (Exception e1) 
 		            	{
@@ -305,7 +326,6 @@ public class MainGUI
 		        }).start();
 			}
 		});
-		
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnNewButton.setBounds(327, 12, 115, 29);
 		panel.add(btnNewButton);
@@ -325,7 +345,7 @@ public class MainGUI
 			}
 		});
 		btnNewButton_3.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnNewButton_3.setBounds(606, 415, 272, 46);
+		btnNewButton_3.setBounds(472, 463, 402, 46);
 		panel.add(btnNewButton_3);
 		
 		JLabel lblDrivesList = new JLabel("Shared Drives List:");
@@ -333,13 +353,15 @@ public class MainGUI
 		lblDrivesList.setBounds(473, 18, 184, 20);
 		panel.add(lblDrivesList);
 		
-		JButton btnNewButton_1 = new JButton("Download");
+		
+		btnNewButton_1.setForeground(Color.DARK_GRAY);
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
 				btnNewButton.setEnabled(false);
 				btnNewButton_1.setEnabled(false);
-				//btnNewButton_3.setEnabled(false);
+				btnNewButton_3.setEnabled(false);
+				btnNewButton_4.setEnabled(false);
 				
 				new Thread(new Runnable()
 				{
@@ -355,8 +377,7 @@ public class MainGUI
 										 service, 
 										 progressBar, 
 										 frmGoogleDriveUtility,
-										 lblNewLabel_3,
-										 textField);
+										 textField, btnNewButton_4);
 					}
 				}).start();
 				
@@ -365,7 +386,7 @@ public class MainGUI
 			}
 		});
 		btnNewButton_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnNewButton_1.setBounds(473, 415, 128, 46);
+		btnNewButton_1.setBounds(473, 415, 197, 46);
 		panel.add(btnNewButton_1);
 		
 		
@@ -374,24 +395,47 @@ public class MainGUI
 		lblSingleFileProgress.setBounds(15, 466, 184, 46);
 		panel.add(lblSingleFileProgress);
 		
-		JButton btnNewButton_4 = new JButton("Rename");
+		
 		btnNewButton_4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				if(list.getSelectedIndexes().length==0)
+				if(list.getSelectedIndexes().length==0&&list.getItemCount()!=0)
 				{
+					for(int i=0; i<list.getItemCount(); i++)
+					{
+						list.select(i);
+					}
+					btnNewButton_4.setText("Deselect All");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 18));
 					
+					//btnNewButton_4.setBounds(473, 466, 150, 45);
 				}
-				else
+				else if(list.getSelectedIndexes().length==list.getItemCount())
 				{
-					Methods.rename();
+					for(int i=0; i<list.getItemCount(); i++)
+					{
+						list.deselect(i);
+					}
+					btnNewButton_4.setText("Select All");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 20));
+					//btnNewButton_4.setBounds(473, 466, 128, 45);
+				}
+				else if(list.getSelectedIndexes().length>0&&list.getSelectedIndexes().length<list.getItemCount())
+				{
+					int[] selected=new int[list.getSelectedIndexes().length];
+					selected=list.getSelectedIndexes();
+					for(int i=0; i<selected.length; i++)
+					{
+						list.deselect(selected[i]);
+					}
+					btnNewButton_4.setText("Select All");
+					btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 20));
 				}
 			}
 		});
 		btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		btnNewButton_4.setBounds(473, 466, 128, 45);
+		btnNewButton_4.setBounds(678, 415, 197, 46);
 		panel.add(btnNewButton_4);
-		btnNewButton_4.setVisible(false);
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Upload", null, panel_1, null);
@@ -496,6 +540,47 @@ public class MainGUI
 		label_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		label_1.setBounds(452, 409, 184, 46);
 		panel_1.add(label_1);
+		
+		/*
+		 * JPanel panel_2 = new JPanel(); tabbedPane.addTab("Settings", null, panel_2,
+		 * null); panel_2.setLayout(null);
+		 * 
+		 * JCheckBox chckbxNewCheckBox_2 = new JCheckBox("Search only for folders");
+		 * chckbxNewCheckBox_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		 * chckbxNewCheckBox_2.setBounds(11, 52, 241, 29);
+		 * panel_2.add(chckbxNewCheckBox_2);
+		 * 
+		 * JCheckBox chckbxSearchForBoth = new
+		 * JCheckBox("Search for both files and folders");
+		 * chckbxSearchForBoth.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		 * chckbxSearchForBoth.setBounds(11, 89, 323, 29);
+		 * panel_2.add(chckbxSearchForBoth);
+		 * 
+		 * JLabel lblNewLabel_2 = new JLabel("Search for file type:");
+		 * lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		 * lblNewLabel_2.setBounds(16, 140, 200, 29); panel_2.add(lblNewLabel_2);
+		 * 
+		 * JLabel lblmimeType = new JLabel("(MIME Type)");
+		 * lblmimeType.setForeground(Color.LIGHT_GRAY); lblmimeType.setFont(new
+		 * Font("Tahoma", Font.PLAIN, 20)); lblmimeType.setBounds(194, 140, 139, 29);
+		 * panel_2.add(lblmimeType);
+		 * 
+		 * java.awt.List list_3 = new java.awt.List(); list_3.setBounds(16, 175, 318,
+		 * 330); panel_2.add(list_3);
+		 * 
+		 * java.awt.List list_4 = new java.awt.List(); list_4.setBounds(358, 175, 318,
+		 * 330); panel_2.add(list_4);
+		 * 
+		 * JLabel label_2 = new JLabel("Search for file type:"); label_2.setFont(new
+		 * Font("Tahoma", Font.PLAIN, 20)); label_2.setBounds(358, 140, 200, 29);
+		 * panel_2.add(label_2);
+		 * 
+		 * JLabel lblfilesExtension = new JLabel("(Extension)");
+		 * lblfilesExtension.setForeground(Color.LIGHT_GRAY);
+		 * lblfilesExtension.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		 * lblfilesExtension.setBounds(537, 140, 139, 29);
+		 * panel_2.add(lblfilesExtension);
+		 */
 		
 	}
 }
