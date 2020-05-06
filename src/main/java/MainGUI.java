@@ -115,6 +115,7 @@ public class MainGUI
 		ArrayList<File> idList = new ArrayList<File>();
 		ArrayList<com.google.api.services.drive.model.Drive> drivesArray= new ArrayList<com.google.api.services.drive.model.Drive>();
 		drivesArray.add(null);
+		Methods.listDrives(service, drivesArray);
 		String driveID=null, pageToken=null, query=null;
 		
 		frmGoogleDriveUtility = new JFrame();
@@ -179,7 +180,10 @@ public class MainGUI
 		panel.add(list_1);
 		
 		list_1.add("MyDrive");
-		Methods.listDrives(list_1, service, drivesArray);
+		for(int i = 1; i<drivesArray.size(); i++)
+		{
+			list_1.add(drivesArray.get(i).getName());
+		}
 		
 		JProgressBar progressBar = new JProgressBar();
 		progressBar.setStringPainted(true);
@@ -460,7 +464,11 @@ public class MainGUI
 		list_2.setBounds(452, 57, 422, 298);
 		panel_1.add(list_2);
 		
-		Methods.listDrives(list_2, service, drivesArray);
+		list_2.add("MyDrive");
+		for(int i = 1; i<drivesArray.size(); i++)
+		{
+			list_2.add(drivesArray.get(i).getName());
+		}
 		
 		Label label = new Label("Shared Drives lists:");
 		label.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -474,7 +482,7 @@ public class MainGUI
 		panel_1.add(lblNewLabel_1);
 		lblNewLabel_1.setVisible(false);
 		
-		JCheckBox chckbxNewCheckBox_1 = new JCheckBox("Upload to MyDrive");
+		/*JCheckBox chckbxNewCheckBox_1 = new JCheckBox("Upload to MyDrive");
 		chckbxNewCheckBox_1.addItemListener(new ItemListener() 
 		{
 			public void itemStateChanged(ItemEvent arg0) 
@@ -492,13 +500,13 @@ public class MainGUI
 		});
 		chckbxNewCheckBox_1.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		chckbxNewCheckBox_1.setBounds(670, 16, 204, 29);
-		panel_1.add(chckbxNewCheckBox_1);
+		panel_1.add(chckbxNewCheckBox_1);*/
 		
 		JButton btnNewButton_2 = new JButton("Upload");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				if(chckbxNewCheckBox_1.isSelected()||list_2.getSelectedIndexes().length==0)
+				if(list_2.getSelectedIndexes().length==0||list_2.getSelectedIndex()==0)
 				{
 					try 
 					{

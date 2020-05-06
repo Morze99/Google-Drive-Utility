@@ -22,14 +22,18 @@ import javax.swing.JLabel;
 
 public class Methods
 {
-	public static void listDrives(java.awt.List list, Drive service, ArrayList<com.google.api.services.drive.model.Drive> drivesArray) throws IOException
+	public static void listDrives(Drive service, 
+								  ArrayList<com.google.api.services.drive.model.Drive> drivesArray) throws IOException
 	{
 		DriveList listDrives=service.drives().list().execute();
 	      for (com.google.api.services.drive.model.Drive drive : listDrives.getDrives())
 	      {
-	        list.add(drive.getName());
 	        drivesArray.add(drive);
 	      }
+	      for(int i = 0; i<drivesArray.size(); i++)
+			{
+				System.out.println(drivesArray.get(i));
+			}
 	}
 	
 	public static void searchAllDrives(ArrayList<com.google.api.services.drive.model.Drive> drivesArray, 
@@ -209,6 +213,7 @@ public class Methods
 								JFrame frmGoogleDriveUtility,
 								JTextField textField, JButton btnNewButton_4)
 	{
+		int err=0;
 		textField.setEnabled(false);
 		btnNewButton_1.setText("Download");
 		btnNewButton_1.setForeground(new Color(3355443));//3355443
@@ -330,7 +335,7 @@ public class Methods
 			try 
 			{
 				buffer.close();
-				System.out.println("OH HO CHIUSO TUTTO");
+				System.out.println("Stream Closed");
 			} catch (IOException e) 
 			{
 				e.printStackTrace();
@@ -344,6 +349,7 @@ public class Methods
 			{
 				System.out.println("File eliminato");
 				fileDownloaded.delete();
+				err=1;
 			}
 			else
 			{
@@ -355,8 +361,16 @@ public class Methods
 		progressBar.setValue(0);
 		btnNewButton.setEnabled(true);
 		btnNewButton_1.setEnabled(true);
-		btnNewButton_1.setText("Completed");
-		btnNewButton_1.setForeground(new Color(65280));//3355443
+		if(err==0)
+		{
+			btnNewButton_1.setText("Completed");
+			btnNewButton_1.setForeground(new Color(0, 255, 0));//3355443
+		}
+		else
+		{
+			btnNewButton_1.setText("Error");
+			btnNewButton_1.setForeground(new Color(255, 0, 0));//3355443
+		}
 		btnNewButton_3.setEnabled(true);
 		btnNewButton_4.setEnabled(true);
 		textField.setEnabled(true);
@@ -380,6 +394,7 @@ public class Methods
 				{
 					File fileMetadata = new File();
 					ArrayList<String> idList=new ArrayList<String>();
+					System.out.println(list_2.getSelectedIndex());
 					idList.add(drivesArray.get(list_2.getSelectedIndex()).getId());
 					fileMetadata.setName(files.get(i).getName());
 					fileMetadata.setParents(idList);
@@ -410,6 +425,8 @@ public class Methods
 					System.out.println("File ID: " + file.getId());
 				}
 				lblNewLabel_1.setVisible(true);
+				progressBar_1.setIndeterminate(false);
+				progressBar_1.setValue(0);
 			}
 		}).start();
 	}
@@ -455,6 +472,8 @@ public class Methods
 					System.out.println("File ID: " + file.getId());
 				}
 				lblNewLabel_1.setVisible(true);
+				progressBar_1.setIndeterminate(false);
+				progressBar_1.setValue(0);
 			}
 		}).start();
 	}
